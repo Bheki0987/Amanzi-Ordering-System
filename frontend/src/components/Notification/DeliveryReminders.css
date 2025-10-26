@@ -1,0 +1,162 @@
+.delivery-reminders {
+  margin-top: 20px;
+}
+
+.delivery-reminders h2 {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  color: #1e40af;
+}
+
+.no-deliveries {
+  color: #6b7280;
+  font-style: italic;
+  text-align: center;
+  padding: 20px;
+  background-color: #f3f4f6;
+  border-radius: 5px;
+}
+
+.delivery-slot-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.slot-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #dbeafe;
+  padding: 15px;
+}
+
+.slot-header h3 {
+  margin: 0;
+  color: #1e40af;
+  font-size: 1.2rem;
+}
+
+.order-count {
+  background-color: #93c5fd;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #1e40af;
+}
+
+.order-list {
+  padding: 0;
+}
+
+.delivery-order {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.delivery-order:last-child {
+  border-bottom: none;
+}
+
+.order-details {
+  color: #6b7280;
+  font-size: 0.9rem;
+  margin-top: 5px;
+}
+
+.complete-delivery-btn {
+  background-color: #10b981;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.complete-delivery-btn:hover {
+  background-color: #059669;
+}
+
+/* Notification Popup */
+.delivery-notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 350px;
+  background-color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  z-index: 1000;
+  animation: slide-in 0.3s ease-out;
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  background-color: #2563eb;
+  color: white;
+  border-radius: 8px 8px 0 0;
+}
+
+.notification-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.close-notification {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.notification-body {
+  padding: 15px;
+}
+
+.delivery-slot-reminder {
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: #f3f4f6;
+  border-radius: 4px;
+}
+
+.delivery-slot-reminder p {
+  margin: 0;
+}
+
+.view-all-btn {
+  display: block;
+  text-align: center;
+  padding: 8px;
+  margin-top: 10px;
+  background-color: #e5e7eb;
+  color: #374151;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.view-all-btn:hover {
+  background-color: #d1d5db;
+}

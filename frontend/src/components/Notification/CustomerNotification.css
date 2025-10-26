@@ -1,0 +1,253 @@
+.customer-reminder-notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 350px;
+  background-color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  z-index: 1000;
+  border-left: 4px solid #2563eb;
+  animation: slide-up 0.3s ease-out;
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.reminder-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  background-color: #dbeafe;
+  border-radius: 8px 8px 0 0;
+}
+
+.reminder-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #1e40af;
+}
+
+.close-reminder {
+  background: none;
+  border: none;
+  color: #1e40af;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.reminder-body {
+  padding: 15px;
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.reminder-icon {
+  font-size: 24px;
+}
+
+.reminder-content p {
+  margin: 5px 0;
+  color: #374151;
+  font-size: 0.95rem;
+}
+
+.reminder-content p:first-child {
+  margin-top: 0;
+}
+
+.reminder-content p:last-child {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* Notification Popup */
+.notification-popup {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  max-width: 400px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  animation: slideIn 0.3s ease-out;
+  border-left: 4px solid #3b82f6;
+}
+
+.notification-popup.urgent {
+  border-left-color: #ef4444;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 10px 40px rgba(239, 68, 68, 0.3);
+  }
+  50% {
+    box-shadow: 0 10px 40px rgba(239, 68, 68, 0.6);
+  }
+}
+
+.notification-content {
+  display: flex;
+  padding: 20px;
+  gap: 15px;
+  position: relative;
+}
+
+.notification-icon {
+  font-size: 2.5rem;
+  flex-shrink: 0;
+}
+
+.notification-message {
+  flex: 1;
+}
+
+.notification-message h3 {
+  margin: 0 0 8px 0;
+  color: #1e40af;
+  font-size: 1.1rem;
+}
+
+.notification-popup.urgent .notification-message h3 {
+  color: #dc2626;
+}
+
+.notification-message > p {
+  margin: 0 0 12px 0;
+  color: #4b5563;
+  font-size: 0.95rem;
+}
+
+.notification-details {
+  background: #f3f4f6;
+  padding: 10px;
+  border-radius: 6px;
+  margin: 12px 0;
+}
+
+.notification-details p {
+  margin: 4px 0;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.notification-instruction {
+  color: #1e40af !important;
+  font-weight: 500;
+  font-size: 0.9rem !important;
+}
+
+.notification-popup.urgent .notification-instruction {
+  color: #dc2626 !important;
+}
+
+.notification-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #9ca3af;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.notification-close:hover {
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
+/* Notification History */
+.notification-history {
+  background: white;
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.notification-history h3 {
+  margin: 0 0 12px 0;
+  color: #1e40af;
+  font-size: 1rem;
+}
+
+.notification-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.notification-item {
+  display: flex;
+  gap: 10px;
+  padding: 8px;
+  background: #f9fafb;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.notification-time {
+  color: #6b7280;
+  font-weight: 500;
+  min-width: 60px;
+}
+
+.notification-text {
+  color: #4b5563;
+  flex: 1;
+}
+
+/* Mobile Responsive */
+@media (max-width: 640px) {
+  .notification-popup {
+    top: 10px;
+    right: 10px;
+    left: 10px;
+    max-width: none;
+  }
+  
+  .notification-content {
+    padding: 15px;
+  }
+  
+  .notification-icon {
+    font-size: 2rem;
+  }
+  
+  .notification-message h3 {
+    font-size: 1rem;
+  }
+}

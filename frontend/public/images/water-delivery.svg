@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  <rect width="800" height="600" fill="#dbeafe"/>
+  <path d="M400,150 C300,150 250,300 150,300 C50,300 50,450 150,450 C250,450 350,400 400,400 C450,400 550,450 650,450 C750,450 750,300 650,300 C550,300 500,150 400,150 Z" fill="#60a5fa"/>
+  <circle cx="400" cy="300" r="100" fill="#2563eb" opacity="0.3"/>
+  <circle cx="400" cy="300" r="50" fill="#1e40af"/>
+  <text x="400" y="300" font-family="Arial" font-size="24" text-anchor="middle" fill="white">Water Delivery</text>
+  <path d="M200,200 Q400,100 600,200" stroke="#93c5fd" fill="none" stroke-width="10"/>
+  <circle cx="200" cy="200" r="10" fill="#93c5fd"/>
+  <circle cx="600" cy="200" r="10" fill="#93c5fd"/>
+  <path d="M300,500 L350,450 L450,450 L500,500 Z" fill="#93c5fd"/>
+  <rect x="320" y="400" width="160" height="50" fill="#93c5fd"/>
+  <rect x="370" y="350" width="60" height="50" fill="#93c5fd"/>
+</svg>

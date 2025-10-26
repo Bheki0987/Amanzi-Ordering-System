@@ -1,0 +1,151 @@
+.invoice-container {
+  background-color: white;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.invoice-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 40px;
+}
+
+.logo h1 {
+  color: #2563eb;
+  margin: 0;
+  font-size: 24px;
+}
+
+.logo p {
+  color: #6b7280;
+  margin-top: 5px;
+}
+
+.invoice-info h2 {
+  color: #1e40af;
+  margin-top: 0;
+  font-size: 24px;
+  text-align: right;
+}
+
+.invoice-info table {
+  margin-left: auto;
+}
+
+.invoice-info td {
+  padding: 3px 0;
+}
+
+.invoice-info td:first-child {
+  font-weight: 600;
+  padding-right: 15px;
+  text-align: right;
+}
+
+.invoice-addresses {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 40px;
+}
+
+.from, .to {
+  flex-basis: 48%;
+}
+
+.from h3, .to h3 {
+  color: #6b7280;
+  font-size: 14px;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.from p, .to p {
+  margin: 5px 0;
+  color: #374151;
+}
+
+.invoice-items {
+  margin-bottom: 40px;
+}
+
+.invoice-items table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.invoice-items th {
+  background-color: #f3f4f6;
+  text-align: left;
+  padding: 12px;
+  color: #374151;
+  font-weight: 600;
+}
+
+.invoice-items td {
+  padding: 12px;
+  border-bottom: 1px solid #e5e7eb;
+  color: #374151;
+}
+
+.invoice-items .total {
+  font-weight: 600;
+}
+
+.invoice-items .total td {
+  border-top: 2px solid #e5e7eb;
+  border-bottom: none;
+}
+
+.invoice-items .total td:first-child {
+  text-align: right;
+}
+
+.invoice-notes {
+  margin-bottom: 40px;
+  padding: 15px;
+  background-color: #f0f9ff;
+  border-radius: 5px;
+}
+
+.invoice-notes h3 {
+  color: #1e40af;
+  font-size: 16px;
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.invoice-notes p {
+  margin: 5px 0;
+  color: #374151;
+}
+
+.invoice-footer {
+  text-align: center;
+  color: #6b7280;
+  padding-top: 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.invoice-footer p {
+  margin: 5px 0;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .invoice-container, .invoice-container * {
+    visibility: visible;
+  }
+  .invoice-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    box-shadow: none;
+    border: none;
+  }
+}
