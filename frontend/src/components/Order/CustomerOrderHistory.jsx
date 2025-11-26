@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import './OrderHistory.css';
+import { updateOrderStatus } from '../../services/orderService';
 
 const OrderHistory = ({ orders, onViewInvoice }) => {
   const [filters, setFilters] = useState({
@@ -121,6 +122,24 @@ const OrderHistory = ({ orders, onViewInvoice }) => {
       rejected: '#ef4444'
     };
     return colors[status] || '#6b7280';
+  };
+
+  const handleApproveCompletion = async (orderId) => {
+    try {
+      const response = await updateOrderStatus(orderId, 'completed');
+      
+      if (response.success) {
+        alert('Order marked as completed! Thank you for using Amanzi.');
+        
+        // Trigger parent refresh
+        if (typeof window !== 'undefined') {
+          window.location.reload();
+        }
+      }
+    } catch (error) {
+      console.error('Error approving completion:', error);
+      alert(error.response?.data?.message || 'Failed to update order. Please try again.');
+    }
   };
 
   return (
@@ -276,9 +295,38 @@ const OrderHistory = ({ orders, onViewInvoice }) => {
                     </span>
                   </td>
                   <td>
-                    <button 
-                      className="view-details-btn"
+                    {order.status === 'pending' && (
+                      <span className="status-badge status-pending">Waiting for Provider</span>
+                    )}
+                    
+                    {order.status === 'accepted' && (
+                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                        <button
+                          onClick={() => {
+                            if (window.confirm('Mark this order as completed?')) {
+                              handleApproveCompletion(order._id);
+                            }
+                          }}
+                          className="action-btn-sm complete"
+                          title="Approve completion after delivery"
+                        >
+                          ✓ Approve Completion
+                        </button>
+                      </div>
+                    )}
+                    
+                    {order.status === 'completed' && (
+                      <span className="status-badge status-completed">Completed</span>
+                    )}
+                    
+                    {order.status === 'rejected' && (
+                      <span className="status-badge status-rejected">Rejected</span>
+                    )}
+                    
+                    <button
                       onClick={() => onViewInvoice(order)}
+                      className="view-details-btn"
+                      style={{ marginTop: '8px', width: '100%' }}
                     >
                       View Details
                     </button>

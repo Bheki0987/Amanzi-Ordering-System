@@ -2,6 +2,8 @@ import React from 'react';
 import './Invoice.css';
 
 const Invoice = ({ order, user }) => {
+  const PRICE_PER_LITER = 2.00; // Updated to R2.00
+
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString('en-ZA', { 
       year: 'numeric', 
@@ -61,6 +63,23 @@ const Invoice = ({ order, user }) => {
         </div>
       </div>
 
+      {/* Provider Information Section */}
+      {order.providerId && (
+        <div className="invoice-provider">
+          <h3>SERVICE PROVIDER</h3>
+          <div className="provider-details">
+            <p><strong>Name:</strong> {order.providerId.name}</p>
+            <p><strong>Email:</strong> {order.providerId.email}</p>
+            {order.providerId.phone && (
+              <p><strong>Phone:</strong> {order.providerId.phone}</p>
+            )}
+          </div>
+          <p className="provider-note">
+            <em>Please contact the service provider using the details above for delivery coordination.</em>
+          </p>
+        </div>
+      )}
+
       <div className="invoice-items">
         <table>
           <thead>
@@ -75,7 +94,7 @@ const Invoice = ({ order, user }) => {
             <tr>
               <td>Purified Water</td>
               <td>{order.quantity} Liters</td>
-              <td>R4.00</td>
+              <td>R{PRICE_PER_LITER.toFixed(2)}</td>
               <td>R{order.totalPrice.toFixed(2)}</td>
             </tr>
             <tr className="total">
@@ -90,7 +109,7 @@ const Invoice = ({ order, user }) => {
         <h3>DELIVERY INFORMATION</h3>
         <p>Delivery Location: {order.location}</p>
         <p>Delivery Slot: {order.deliverySlot}</p>
-        <p>Payment Method: <strong>Cash on Delivery</strong></p>
+        <p>Payment Method: <strong>{order.paymentMethod === 'card' ? 'Card Payment' : 'Cash on Delivery'}</strong></p>
       </div>
 
       <div className="invoice-footer">

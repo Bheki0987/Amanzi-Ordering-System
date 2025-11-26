@@ -27,6 +27,14 @@
   margin-bottom: 2rem;
 }
 
+.auth-logo {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  margin: 0 auto 1rem;
+  display: block;
+}
+
 .register-header h2 {
   font-size: 1.75rem;
   font-weight: 700;

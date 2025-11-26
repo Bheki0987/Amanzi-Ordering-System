@@ -1,36 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Login.css';
 import { login } from '../../services/authService';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // Check if user is already logged in
-    try {
-      const token = localStorage.getItem('token');
-      const userString = localStorage.getItem('user');
-      
-      if (token && userString) {
-        const user = JSON.parse(userString);
-        
-        if (user?.role === 'customer') {
-          navigate('/customer/dashboard');
-        } else if (user?.role === 'provider') {
-          navigate('/provider/dashboard');
-        }
-      }
-    } catch (err) {
-      console.error('Error checking authentication:', err);
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-    }
-  }, [navigate]);
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,83 +27,105 @@ const Login = () => {
     setError('');
 
     try {
-      // Use real login API
-      const response = await login(email, password);
+      const response = await login(formData.email, formData.password);
       
-      // Log the response for debugging
-      console.log('Login response:', response);
-      
-      // Check if we have user data and token
-      if (!response || !response.token) {
-        throw new Error('Invalid response from server');
-      }
-      
-      // Get user from response
-      const user = response.user || {};
-      
-      // Redirect based on role
-      if (user.role === 'customer') {
+      if (response.user.role === 'customer' || response.user.role === 'student') {
         navigate('/customer/dashboard');
-      } else if (user.role === 'provider') {
+      } else if (response.user.role === 'provider' || response.user.role === 'supplier') {
         navigate('/provider/dashboard');
       } else {
-        throw new Error('Invalid user role');
+        navigate('/');
       }
     } catch (err) {
-      console.error('Login failed:', err);
-      setError(err?.response?.data?.message || err?.message || 'Login failed. Please check your credentials.');
+      setError(err.response?.data?.message || 'Login failed');
+    } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="login-container">
       <div className="login-card">
         <div className="login-header">
-          <h1>Amanzi Ordering System</h1>
-          <h2>Login to Your Account</h2>
+          <img src="/images/Amanzi Logo.png" alt="Amanzi Logo" className="auth-logo" />
+          <h2>Welcome Back</h2>
+          <p>Sign in to your account</p>
         </div>
-        
+
         {error && <div className="error-message">{error}</div>}
-        
-        <form onSubmit={handleSubmit}>
+
+        <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
-            <label>Email</label>
-            <input 
+            <label htmlFor="email">Email Address</label>
+            <input
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              className="form-control"
               placeholder="Enter your email"
-              required
             />
           </div>
-          
+
           <div className="form-group">
-            <label>Password</label>
-            <input 
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
-              required
-            />
+            <label htmlFor="password">Password</label>
+            <div style={{ position: 'relative' }}>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                className="form-control"
+                placeholder="Enter your password"
+                style={{ paddingRight: '45px' }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: 'absolute',
+                  right: '10px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: '1.2rem',
+                  color: '#6b7280',
+                  padding: '5px'
+                }}
+                aria-label="Toggle password visibility"
+              >
+                {showPassword ? '👁️' : '👁️‍🗨️'}
+              </button>
+            </div>
           </div>
-          
-          <button 
-            type="submit" 
-            className="login-btn" 
+
+          <button
+            type="submit"
             disabled={loading}
+            className="login-btn"
           >
-            {loading ? 'Logging in...' : 'Login'}
+            {loading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
-             
-        <div className="auth-footer">
+
+        <div className="login-footer">
           <p>
-            Don't have an account? <Link to="/register">Register here</Link>
+            <Link to="/forgot-password" className="forgot-password-link">
+              Forgot your password?
+            </Link>
           </p>
           <p>
-            <Link to="/forgot-password">Forgot Password?</Link>
+            Don't have an account?{' '}
+            <Link to="/register" className="register-link">
+              Sign up here
+            </Link>
           </p>
         </div>
       </div>

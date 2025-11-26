@@ -4,8 +4,8 @@
 }
 
 .dashboard-header {
-  background-color: #2563eb;
-  color: white;
+  background-color: white;
+  color: #1e40af;
   padding: 1rem 2rem;
   display: flex;
   justify-content: space-between;
@@ -14,8 +14,18 @@
 }
 
 .header-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   font-size: 1.5rem;
   font-weight: 600;
+  color: #1e40af;
+}
+
+.dashboard-logo {
+  width: 45px;
+  height: 45px;
+  object-fit: contain;
 }
 
 .user-info {

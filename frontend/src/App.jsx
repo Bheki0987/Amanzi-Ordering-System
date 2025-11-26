@@ -3,10 +3,11 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Home from './pages/Home';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
-import CustomerDashboard from './components/Dashboard/CustomerDashboard';
-import ProviderDashboard from './components/Dashboard/ProviderDashboard';
 import ForgotPassword from './components/Auth/ForgotPassword';
 import ResetPassword from './components/Auth/ResetPassword';
+import CustomerDashboard from './pages/CustomerDashboard';
+import ProviderDashboard from './pages/ProviderDashboard';
+import Payment from './components/Payment/StripePayment';
 import { isAuthenticated, getCurrentUser } from './services/authService';
 
 // Simple private route implementation
@@ -19,14 +20,12 @@ const PrivateRoute = ({ children, requiredRole }) => {
   }
   
   if (requiredRole && user?.role !== requiredRole) {
-    // Redirect to the appropriate dashboard based on role
-    if (user?.role === 'customer' || user?.role === 'student') {
+    if (user?.role === 'customer') {
       return <Navigate to="/customer/dashboard" />;
     }
-    if (user?.role === 'provider' || user?.role === 'supplier') {
+    if (user?.role === 'provider') {
       return <Navigate to="/provider/dashboard" />;
     }
-    // If no valid role, send to home
     return <Navigate to="/" />;
   }
   
@@ -51,6 +50,15 @@ const App = () => {
         />
         
         <Route 
+          path="/customer/payment/:orderId" 
+          element={
+            <PrivateRoute requiredRole="customer">
+              <Payment />
+            </PrivateRoute>
+          } 
+        />
+        
+        <Route 
           path="/provider/dashboard" 
           element={
             <PrivateRoute requiredRole="provider">
@@ -62,7 +70,6 @@ const App = () => {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:resetToken" element={<ResetPassword />} />
         
-        {/* Fallback route */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>

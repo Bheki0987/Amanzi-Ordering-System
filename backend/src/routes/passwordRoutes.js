@@ -6,7 +6,6 @@ const {
   verifyResetToken 
 } = require('../controllers/passwordController');
 
-// Password reset routes
 router.post('/forgot', forgotPassword);
 router.put('/reset/:resetToken', resetPassword);
 router.get('/verify/:resetToken', verifyResetToken);

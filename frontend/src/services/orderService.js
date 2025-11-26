@@ -1,65 +1,76 @@
 import API from './api';
 
-export const getOrders = async () => {
+// Get my orders (customer)
+export const getMyOrders = async () => {
   try {
-    const response = await API.get('/orders');
-    return response.data;
+    const response = await API.get('/orders/my-orders');
+    console.log('getMyOrders response:', response.data);
+    
+    // Handle different response formats
+    if (Array.isArray(response.data)) {
+      return response.data;
+    } else if (response.data.data && Array.isArray(response.data.data)) {
+      return response.data.data;
+    } else {
+      console.error('Unexpected response format:', response.data);
+      return [];
+    }
   } catch (error) {
-    console.error('Error fetching orders:', error.response?.data?.message || error.message);
+    console.error('Get my orders error:', error);
     throw error;
   }
 };
 
-export const getOrderById = async (orderId) => {
-  try {
-    const response = await API.get(`/orders/${orderId}`);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching order details:', error.response?.data?.message || error.message);
-    throw error;
-  }
-};
-
-// Create a new order
+// Create order
 export const createOrder = async (orderData) => {
   try {
     const response = await API.post('/orders', orderData);
     return response.data;
   } catch (error) {
-    console.error('Order creation error:', error);
+    console.error('Create order error:', error);
     throw error;
   }
 };
 
-// Cancel an order
-export const cancelOrder = async (orderId) => {
+// Get all orders (provider/admin)
+export const getOrders = async () => {
   try {
-    const response = await API.put(`/orders/${orderId}/cancel`);
+    const response = await API.get('/orders');
     return response.data;
   } catch (error) {
-    console.error('Error cancelling order:', error.response?.data?.message || error.message);
+    console.error('Get orders error:', error);
     throw error;
   }
 };
 
-// Get customer orders
-export const getMyOrders = async () => {
-  try {
-    const response = await API.get('/orders/my-orders');
-    return response.data;
-  } catch (error) {
-    console.error('Fetch orders error:', error);
-    throw error;
-  }
-};
-
-// Get provider orders
+// Get provider orders (orders assigned to logged-in provider)
 export const getProviderOrders = async () => {
   try {
-    const response = await API.get('/orders/provider-orders');
+    const response = await API.get('/orders');
+    console.log('getProviderOrders response:', response.data);
+    
+    // Handle different response formats
+    if (Array.isArray(response.data)) {
+      return response.data;
+    } else if (response.data.data && Array.isArray(response.data.data)) {
+      return response.data.data;
+    } else {
+      console.error('Unexpected response format:', response.data);
+      return [];
+    }
+  } catch (error) {
+    console.error('Get provider orders error:', error);
+    throw error;
+  }
+};
+
+// Get single order
+export const getOrderById = async (orderId) => {
+  try {
+    const response = await API.get(`/orders/${orderId}`);
     return response.data;
   } catch (error) {
-    console.error('Fetch provider orders error:', error);
+    console.error('Get order by ID error:', error);
     throw error;
   }
 };
@@ -75,13 +86,36 @@ export const updateOrderStatus = async (orderId, status) => {
   }
 };
 
-// Get provider order stats
+// Delete order
+export const deleteOrder = async (orderId) => {
+  try {
+    const response = await API.delete(`/orders/${orderId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Delete order error:', error);
+    throw error;
+  }
+};
+
+// Get order statistics (for provider dashboard)
 export const getOrderStats = async () => {
   try {
     const response = await API.get('/orders/stats');
+    console.log('getOrderStats response:', response.data);
     return response.data;
   } catch (error) {
-    console.error('Fetch order stats error:', error);
+    console.error('Get order stats error:', error);
     throw error;
   }
+};
+
+export default {
+  getMyOrders,
+  createOrder,
+  getOrders,
+  getProviderOrders,
+  getOrderById,
+  updateOrderStatus,
+  deleteOrder,
+  getOrderStats
 };

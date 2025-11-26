@@ -1,20 +1,13 @@
 import React, { useState, useMemo } from 'react';
 import './OrderHistory.css';
 
-const ProviderOrderHistory = ({ orders, onUpdateStatus }) => {
+const ProviderOrderHistory = ({ orders, onOrderUpdate }) => {
   const [filters, setFilters] = useState({
     status: 'all',
     dateRange: 'all',
     searchQuery: '',
-    sortBy: 'newest',
-    residence: 'all'
+    sortBy: 'newest'
   });
-
-  // Get unique residences
-  const residences = useMemo(() => {
-    const uniqueResidences = [...new Set(orders.map(order => order.residence))];
-    return uniqueResidences.sort();
-  }, [orders]);
 
   // Filter and sort orders
   const filteredOrders = useMemo(() => {
@@ -23,11 +16,6 @@ const ProviderOrderHistory = ({ orders, onUpdateStatus }) => {
     // Filter by status
     if (filters.status !== 'all') {
       filtered = filtered.filter(order => order.status === filters.status);
-    }
-
-    // Filter by residence
-    if (filters.residence !== 'all') {
-      filtered = filtered.filter(order => order.residence === filters.residence);
     }
 
     // Filter by date range
@@ -57,9 +45,9 @@ const ProviderOrderHistory = ({ orders, onUpdateStatus }) => {
       const query = filters.searchQuery.toLowerCase();
       filtered = filtered.filter(order =>
         order._id.toLowerCase().includes(query) ||
-        order.customerId.name.toLowerCase().includes(query) ||
-        order.customerId.email.toLowerCase().includes(query) ||
-        order.residence.toLowerCase().includes(query)
+        order.customerId?.name?.toLowerCase().includes(query) ||
+        order.residence?.toLowerCase().includes(query) ||
+        order.deliverySlot?.toLowerCase().includes(query)
       );
     }
 
@@ -77,10 +65,10 @@ const ProviderOrderHistory = ({ orders, onUpdateStatus }) => {
       case 'quantity-low':
         filtered.sort((a, b) => a.quantity - b.quantity);
         break;
-      case 'revenue-high':
+      case 'price-high':
         filtered.sort((a, b) => b.totalPrice - a.totalPrice);
         break;
-      case 'revenue-low':
+      case 'price-low':
         filtered.sort((a, b) => a.totalPrice - b.totalPrice);
         break;
       default:
@@ -95,9 +83,9 @@ const ProviderOrderHistory = ({ orders, onUpdateStatus }) => {
     return {
       total: filteredOrders.length,
       totalLiters: filteredOrders.reduce((sum, order) => sum + order.quantity, 0),
-      totalRevenue: filteredOrders.reduce((sum, order) => 
-        order.status === 'completed' ? sum + order.totalPrice : sum, 0
-      ),
+      totalRevenue: filteredOrders
+        .filter(o => o.status === 'completed')
+        .reduce((sum, order) => sum + order.totalPrice, 0),
       pending: filteredOrders.filter(o => o.status === 'pending').length,
       accepted: filteredOrders.filter(o => o.status === 'accepted').length,
       completed: filteredOrders.filter(o => o.status === 'completed').length,
@@ -114,8 +102,7 @@ const ProviderOrderHistory = ({ orders, onUpdateStatus }) => {
       status: 'all',
       dateRange: 'all',
       searchQuery: '',
-      sortBy: 'newest',
-      residence: 'all'
+      sortBy: 'newest'
     });
   };
 
@@ -137,6 +124,40 @@ const ProviderOrderHistory = ({ orders, onUpdateStatus }) => {
       rejected: '#ef4444'
     };
     return colors[status] || '#6b7280';
+  };
+
+  // ADDED: Handler functions for order actions
+  const handleAcceptOrder = async (orderId) => {
+    if (window.confirm('Accept this order?')) {
+      try {
+        await onOrderUpdate(orderId, 'accepted');
+      } catch (error) {
+        console.error('Error accepting order:', error);
+        alert('Failed to accept order. Please try again.');
+      }
+    }
+  };
+
+  const handleRejectOrder = async (orderId) => {
+    if (window.confirm('Reject this order? This action cannot be undone.')) {
+      try {
+        await onOrderUpdate(orderId, 'rejected');
+      } catch (error) {
+        console.error('Error rejecting order:', error);
+        alert('Failed to reject order. Please try again.');
+      }
+    }
+  };
+
+  const handleCompleteOrder = async (orderId) => {
+    if (window.confirm('Mark this order as completed/delivered?')) {
+      try {
+        await onOrderUpdate(orderId, 'completed');
+      } catch (error) {
+        console.error('Error completing order:', error);
+        alert('Failed to complete order. Please try again.');
+      }
+    }
   };
 
   return (
@@ -171,20 +192,6 @@ const ProviderOrderHistory = ({ orders, onUpdateStatus }) => {
           </div>
 
           <div className="filter-group">
-            <label>Residence</label>
-            <select
-              value={filters.residence}
-              onChange={(e) => handleFilterChange('residence', e.target.value)}
-              className="filter-select"
-            >
-              <option value="all">All Residences</option>
-              {residences.map(res => (
-                <option key={res} value={res}>{res}</option>
-              ))}
-            </select>
-          </div>
-
-          <div className="filter-group">
             <label>Date Range</label>
             <select
               value={filters.dateRange}
@@ -210,13 +217,13 @@ const ProviderOrderHistory = ({ orders, onUpdateStatus }) => {
               <option value="oldest">Oldest First</option>
               <option value="quantity-high">Quantity (High to Low)</option>
               <option value="quantity-low">Quantity (Low to High)</option>
-              <option value="revenue-high">Revenue (High to Low)</option>
-              <option value="revenue-low">Revenue (Low to High)</option>
+              <option value="price-high">Price (High to Low)</option>
+              <option value="price-low">Price (Low to High)</option>
             </select>
           </div>
 
           <button onClick={resetFilters} className="reset-btn">
-            Reset
+            Reset Filters
           </button>
         </div>
       </div>
@@ -234,14 +241,14 @@ const ProviderOrderHistory = ({ orders, onUpdateStatus }) => {
           <div className="stat-icon">💧</div>
           <div className="stat-info">
             <div className="stat-value">{stats.totalLiters}L</div>
-            <div className="stat-label">Water Delivered</div>
+            <div className="stat-label">Total Water</div>
           </div>
         </div>
         <div className="stat-card">
           <div className="stat-icon">💰</div>
           <div className="stat-info">
             <div className="stat-value">R{stats.totalRevenue.toFixed(2)}</div>
-            <div className="stat-label">Revenue</div>
+            <div className="stat-label">Total Revenue</div>
           </div>
         </div>
         <div className="stat-card">
@@ -266,7 +273,7 @@ const ProviderOrderHistory = ({ orders, onUpdateStatus }) => {
           <div className="empty-state">
             <div className="empty-icon">📦</div>
             <h3>No orders found</h3>
-            <p>Try adjusting your filters.</p>
+            <p>Try adjusting your filters or wait for new orders.</p>
           </div>
         ) : (
           <table className="orders-table">
@@ -277,8 +284,9 @@ const ProviderOrderHistory = ({ orders, onUpdateStatus }) => {
                 <th>Date</th>
                 <th>Quantity</th>
                 <th>Amount</th>
-                <th>Slot</th>
+                <th>Delivery Slot</th>
                 <th>Location</th>
+                <th>Payment</th>
                 <th>Status</th>
                 <th>Actions</th>
               </tr>
@@ -291,21 +299,25 @@ const ProviderOrderHistory = ({ orders, onUpdateStatus }) => {
                   </td>
                   <td>
                     <div>
-                      <div style={{ fontWeight: 500 }}>{order.customerId.name}</div>
-                      <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>
-                        {order.customerId.email}
-                      </div>
+                      <strong>{order.customerId?.name || 'Unknown'}</strong>
+                      <br />
+                      <small style={{ color: '#6b7280' }}>{order.customerId?.email}</small>
                     </div>
                   </td>
                   <td>{formatDate(order.orderDate)}</td>
                   <td>
-                    <strong>{order.quantity}</strong>L
+                    <strong>{order.quantity}</strong> Liters
                   </td>
-                  <td className="price">R{order.totalPrice.toFixed(2)}</td>
+                  <td className="price">R{order.totalPrice?.toFixed(2)}</td>
                   <td>
                     <span className="time-badge">{order.deliverySlot}</span>
                   </td>
                   <td>{order.residence}</td>
+                  <td>
+                    <span className="payment-badge">
+                      {order.paymentMethod === 'card' ? '💳 Card' : '💵 Cash'}
+                    </span>
+                  </td>
                   <td>
                     <span 
                       className="status-badge" 
@@ -315,33 +327,77 @@ const ProviderOrderHistory = ({ orders, onUpdateStatus }) => {
                     </span>
                   </td>
                   <td>
-                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                      {/* PENDING ORDERS - Show Accept and Reject buttons */}
                       {order.status === 'pending' && (
                         <>
-                          <button 
-                            className="action-btn-sm accept"
-                            onClick={() => onUpdateStatus(order._id, 'accepted')}
-                            title="Accept Order"
+                          <button
+                            onClick={() => handleAcceptOrder(order._id)}
+                            className="action-btn accept"
+                            style={{
+                              backgroundColor: '#10b981',
+                              color: 'white',
+                              border: 'none',
+                              padding: '6px 12px',
+                              borderRadius: '6px',
+                              cursor: 'pointer',
+                              fontSize: '0.875rem',
+                              fontWeight: '500'
+                            }}
                           >
-                            ✓
+                            ✓ Accept
                           </button>
-                          <button 
-                            className="action-btn-sm reject"
-                            onClick={() => onUpdateStatus(order._id, 'rejected')}
-                            title="Reject Order"
+                          <button
+                            onClick={() => handleRejectOrder(order._id)}
+                            className="action-btn reject"
+                            style={{
+                              backgroundColor: '#ef4444',
+                              color: 'white',
+                              border: 'none',
+                              padding: '6px 12px',
+                              borderRadius: '6px',
+                              cursor: 'pointer',
+                              fontSize: '0.875rem',
+                              fontWeight: '500'
+                            }}
                           >
-                            ✕
+                            ✕ Reject
                           </button>
                         </>
                       )}
+
+                      {/* ACCEPTED ORDERS - Show Complete button */}
                       {order.status === 'accepted' && (
-                        <button 
-                          className="action-btn-sm complete"
-                          onClick={() => onUpdateStatus(order._id, 'completed')}
-                          title="Mark as Completed"
+                        <button
+                          onClick={() => handleCompleteOrder(order._id)}
+                          className="action-btn complete"
+                          style={{
+                            backgroundColor: '#3b82f6',
+                            color: 'white',
+                            border: 'none',
+                            padding: '6px 12px',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            fontSize: '0.875rem',
+                            fontWeight: '500'
+                          }}
                         >
-                          ✓✓
+                          ✓✓ Mark as Delivered
                         </button>
+                      )}
+
+                      {/* COMPLETED ORDERS - Show status only */}
+                      {order.status === 'completed' && (
+                        <span style={{ color: '#10b981', fontSize: '0.875rem', fontWeight: '500' }}>
+                          ✓ Delivered
+                        </span>
+                      )}
+
+                      {/* REJECTED ORDERS - Show status only */}
+                      {order.status === 'rejected' && (
+                        <span style={{ color: '#ef4444', fontSize: '0.875rem', fontWeight: '500' }}>
+                          ✕ Rejected
+                        </span>
                       )}
                     </div>
                   </td>

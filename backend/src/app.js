@@ -15,12 +15,18 @@ const authRoutes = require('./routes/authRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const customerRoutes = require('./routes/customerRoutes');
 const providerRoutes = require('./routes/providerRoutes');
+const passwordRoutes = require('./routes/passwordRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
 
 // Initialize express app
 const app = express();
 
 // Middleware
 app.use(cors());
+
+// Raw body for Stripe webhooks (MUST come before express.json())
+app.use('/api/payments/webhook', express.raw({ type: 'application/json' }));
+
 app.use(express.json());
 
 // Logging in development mode
@@ -33,6 +39,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/customers', customerRoutes);
 app.use('/api/providers', providerRoutes);
+app.use('/api/password', passwordRoutes);
+app.use('/api/payments', paymentRoutes);
 
 // Default route
 app.get('/', (req, res) => {

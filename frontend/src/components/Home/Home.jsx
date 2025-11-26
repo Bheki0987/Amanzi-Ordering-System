@@ -1,7 +1,7 @@
 // src/pages/Home.jsx
-import React from "react";
-import { Link } from "react-router-dom";
-import "../components/Home/Home.css";
+import React from 'react';
+import { Link } from 'react-router-dom';
+import './Home.css';
 
 const Home = () => {
   return (
@@ -9,11 +9,10 @@ const Home = () => {
       {/* Navigation */}
       <nav className="home-nav">
         <div className="nav-logo">
-          <img src="/images/Amanzi Logo.png" alt="Amanzi Logo" className="logo-image" />
           <span>Amanzi</span> Ordering System
         </div>
         <div className="nav-links">
-          <a href="#features">Features</a>
+          <a href="#features">Features </a>
           <a href="#how-it-works">How It Works</a>
           <a href="#faq">FAQs</a>
           <Link to="/login" className="login-btn">Login</Link>
@@ -32,7 +31,7 @@ const Home = () => {
           </div>
         </div>
         <div className="hero-image">
-          <img src="/images/Amanzi Logo.png" alt="Amanzi Water Delivery" />
+          <img src="/images/water-delivery.svg" alt="Water Delivery" />
         </div>
       </section>
 
@@ -56,7 +55,7 @@ const Home = () => {
           <div className="feature-card">
             <div className="feature-icon">💰</div>
             <h3>Affordable Pricing</h3>
-            <p>Just R2 per liter with no hidden fees</p>
+            <p>Just R4 per liter with no hidden fees</p>
           </div>
           <div className="feature-card">
             <div className="feature-icon">📱</div>
@@ -184,7 +183,7 @@ const Home = () => {
         <div className="faq-container">
           <div className="faq-item">
             <h3>How much does delivery cost?</h3>
-            <p>Delivery is FREE of charge. You only pay R2 per liter of water with no additional fees and select your schedule.</p>
+            <p>Delivery is FREE of charge. You only pay R4 per liter of water with no additional fees.</p>
           </div>
           <div className="faq-item">
             <h3>What are the delivery time slots?</h3>
@@ -192,7 +191,7 @@ const Home = () => {
           </div>
           <div className="faq-item">
             <h3>How do I pay for my order?</h3>
-            <p>We accept cash on delivery and card payments. Please have the exact amount ready to make the transaction quick and easy.</p>
+            <p>We accept cash on delivery only. Please have the exact amount ready to make the transaction quick and easy.</p>
           </div>
           <div className="faq-item">
             <h3>What if I'm not available during delivery?</h3>
@@ -247,7 +246,7 @@ const Home = () => {
               <h3>Contact</h3>
               <ul>
                 <li>Email: amanzi@support.com</li>
-                <li>Phone: 072 252 0766</li>
+                <li>Phone: 012-345-6789</li>
                 <li>NWU Mahikeng Campus</li>
               </ul>
             </div>

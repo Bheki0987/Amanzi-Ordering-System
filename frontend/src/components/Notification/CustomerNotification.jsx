@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import './CustomerNotification.css';
 
-const CustomerNotification = ({ orders }) => {
+const CustomerNotification = ({ orders = [] }) => {
   const [notifications, setNotifications] = useState([]);
   const [showNotification, setShowNotification] = useState(false);
   const [currentNotification, setCurrentNotification] = useState(null);
 
   useEffect(() => {
+    // Only run if orders is a valid array
+    if (!Array.isArray(orders) || orders.length === 0) {
+      return;
+    }
+
     // Check for upcoming deliveries every minute
     const checkUpcomingDeliveries = () => {
       const now = new Date();
@@ -14,6 +19,7 @@ const CustomerNotification = ({ orders }) => {
       
       // Filter accepted orders for today
       const todaysAcceptedOrders = orders.filter(order => {
+        if (!order || !order.orderDate || !order.status) return false;
         const orderDate = new Date(order.orderDate).toISOString().split('T')[0];
         return orderDate === today && order.status === 'accepted';
       });
@@ -52,13 +58,18 @@ const CustomerNotification = ({ orders }) => {
     // Parse slot like "10:00-12:00" or "18:00-22:00"
     if (!slotString) return null;
     
-    const startTime = slotString.split('-')[0].trim();
-    const [hours, minutes] = startTime.split(':').map(Number);
-    
-    const deliveryDate = new Date();
-    deliveryDate.setHours(hours, minutes, 0, 0);
-    
-    return deliveryDate;
+    try {
+      const startTime = slotString.split('-')[0].trim();
+      const [hours, minutes] = startTime.split(':').map(Number);
+      
+      const deliveryDate = new Date();
+      deliveryDate.setHours(hours, minutes, 0, 0);
+      
+      return deliveryDate;
+    } catch (error) {
+      console.error('Error parsing delivery slot:', error);
+      return null;
+    }
   };
   
   const showDeliveryNotification = (order, isUrgent = false) => {
@@ -82,7 +93,7 @@ const CustomerNotification = ({ orders }) => {
     if ('Notification' in window && Notification.permission === 'granted') {
       new Notification('Amanzi Ordering System - Delivery Alert', {
         body: notification.message,
-        icon: '/water-icon.png',   //Add mine later
+        icon: '/water-icon.png',
         badge: '/water-badge.png',
         tag: `delivery-${order._id}`,
         requireInteraction: isUrgent
@@ -97,22 +108,26 @@ const CustomerNotification = ({ orders }) => {
   };
   
   const playNotificationSound = () => {
-    // Create a simple beep sound
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-    
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-    
-    oscillator.frequency.value = 800;
-    oscillator.type = 'sine';
-    
-    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-    
-    oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + 0.5);
+    try {
+      // Create a simple beep sound
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.frequency.value = 800;
+      oscillator.type = 'sine';
+      
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.5);
+    } catch (error) {
+      console.error('Error playing notification sound:', error);
+    }
   };
   
   const dismissNotification = () => {

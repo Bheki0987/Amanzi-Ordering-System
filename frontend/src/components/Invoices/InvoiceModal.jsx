@@ -2,6 +2,8 @@ import React from 'react';
 import './InvoiceModal.css';
 
 const InvoiceModal = ({ order, user, onClose }) => {
+  const PRICE_PER_LITER = 2.00; // Updated to R2.00
+
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -56,6 +58,21 @@ const InvoiceModal = ({ order, user, onClose }) => {
             <p><strong>Residence:</strong> {order.residence}</p>
           </div>
           
+          {/* Provider Information Section */}
+          {order.providerId && (
+            <div className="invoice-provider">
+              <h3>Service Provider</h3>
+              <p><strong>Name:</strong> {order.providerId.name}</p>
+              <p><strong>Email:</strong> {order.providerId.email}</p>
+              {order.providerId.phone && (
+                <p><strong>Phone:</strong> {order.providerId.phone}</p>
+              )}
+              <p className="provider-note">
+                Please show this invoice to the service provider during water collection.
+              </p>
+            </div>
+          )}
+          
           <div className="invoice-items">
             <h3>Order Summary</h3>
             <table className="invoice-table">
@@ -71,7 +88,7 @@ const InvoiceModal = ({ order, user, onClose }) => {
                 <tr>
                   <td>Drinking Water</td>
                   <td>{order.quantity} Liters</td>
-                  <td>R4.00 / Liter</td>
+                  <td>R{PRICE_PER_LITER.toFixed(2)} / Liter</td>
                   <td>R{order.totalPrice.toFixed(2)}</td>
                 </tr>
               </tbody>

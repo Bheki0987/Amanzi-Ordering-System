@@ -40,9 +40,18 @@ h1, h2, h3 {
 }
 
 .nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   font-size: 1.5rem;
   font-weight: 700;
   color: #1e40af;
+}
+
+.nav-logo .logo-image {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
 }
 
 .nav-logo span {
@@ -147,12 +156,24 @@ h1, h2, h3 {
   flex: 1;
   display: flex;
   justify-content: center;
+  align-items: center;
 }
 
 .hero-image img {
-  max-width: 100%;
+  max-width: 450px;
+  width: 100%;
   height: auto;
-  max-height: 500px;
+  object-fit: contain;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
 }
 
 /* Section Styles */

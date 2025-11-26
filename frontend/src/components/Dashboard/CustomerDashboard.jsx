@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { logout, getCurrentUser } from '../../services/authService';
 import { getMyOrders } from '../../services/orderService';
 import OrderForm from '../Order/OrderForm';
@@ -26,56 +26,97 @@ const CustomerDashboard = () => {
   const [currentOrder, setCurrentOrder] = useState(null);
 
   const navigate = useNavigate();
+  const location = useLocation();
   const user = getCurrentUser();
 
-  // Fetch orders from API
+  // Define fetchOrders function
   const fetchOrders = async () => {
-    setLoading(true);
     try {
-      const response = await getMyOrders();
-      setOrders(response.data);
+      setLoading(true);
+      setError('');
+      console.log('Fetching orders...');
+      const data = await getMyOrders();
+      
+      // Ensure data is an array
+      const ordersArray = Array.isArray(data) ? data : [];
+      console.log('Orders fetched:', ordersArray.length);
+      setOrders(ordersArray);
       
       // Calculate stats
-      const total = response.data.length;
-      const pending = response.data.filter(order => order.status === 'pending').length;
-      const accepted = response.data.filter(order => order.status === 'accepted').length;
-      const completed = response.data.filter(order => order.status === 'completed').length;
-      const rejected = response.data.filter(order => order.status === 'rejected').length;
-      
       setStats({
-        total,
-        pending,
-        accepted,
-        completed,
-        rejected
+        total: ordersArray.length,
+        pending: ordersArray.filter(order => order.status === 'pending').length,
+        accepted: ordersArray.filter(order => order.status === 'accepted').length,
+        completed: ordersArray.filter(order => order.status === 'completed').length,
+        rejected: ordersArray.filter(order => order.status === 'rejected').length
       });
-      
-      setLoading(false);
     } catch (err) {
       console.error('Error fetching orders:', err);
-      setError('Failed to fetch orders');
+      setError(err.response?.data?.message || 'Failed to fetch orders');
+      setOrders([]); // Set to empty array on error
+    } finally {
       setLoading(false);
     }
   };
 
   // Fetch orders on component mount and periodically
   useEffect(() => {
-    // Request notification permission
-    if ('Notification' in window && Notification.permission === 'default') {
-      Notification.requestPermission();
+    // Request notification permission on user interaction only
+    const requestNotificationPermission = () => {
+      if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission();
+      }
+    };
+    
+    // Add click listener to request permission on first interaction
+    document.addEventListener('click', requestNotificationPermission, { once: true });
+    
+    // Check for success messages from navigation state or query params
+    if (location.state?.orderSuccess) {
+      setSuccess(location.state.message || 'Order placed successfully!');
+      setActiveTab('orders');
+      // Clear the state
+      window.history.replaceState({}, document.title);
+      
+      // Auto-hide success message after 5 seconds
+      setTimeout(() => setSuccess(''), 5000);
+      
+      // Fetch orders immediately
+      fetchOrders();
     }
     
-    fetchOrders();
+    const searchParams = new URLSearchParams(location.search);
+    if (searchParams.get('payment') === 'success') {
+      console.log('Payment successful - refreshing orders');
+      setSuccess('Payment successful! Your order has been confirmed.');
+      setActiveTab('orders');
+      
+      // Clear query params
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, '', newUrl);
+      
+      // Auto-hide success message after 5 seconds
+      setTimeout(() => setSuccess(''), 5000);
+      
+      // Fetch orders immediately after payment success
+      fetchOrders();
+    } else {
+      // Initial fetch if not from payment redirect
+      fetchOrders();
+    }
     
     // Refresh orders every 2 minutes to check for status updates
     const interval = setInterval(fetchOrders, 120000);
     
-    return () => clearInterval(interval);
-  }, []);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('click', requestNotificationPermission);
+    };
+  }, [location.search, location.state]); // Added dependencies
 
-  // Fetch orders when active tab changes
+  // Fetch orders when active tab changes to orders
   useEffect(() => {
-    if (['orders', 'pending', 'accepted', 'completed'].includes(activeTab)) {
+    if (activeTab === 'orders') {
       fetchOrders();
     }
   }, [activeTab]);
@@ -91,34 +132,21 @@ const CustomerDashboard = () => {
   };
 
   const handleOrderSubmit = (orderData) => {
+    console.log('Order submitted:', orderData);
+    // Fetch orders immediately after submission
     fetchOrders();
     setActiveTab('orders');
   };
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
-  const filteredOrders = activeTab === 'orders' ? orders : 
-    activeTab === 'pending' ? orders.filter(order => order.status === 'pending') :
-    activeTab === 'accepted' ? orders.filter(order => order.status === 'accepted') :
-    activeTab === 'completed' ? orders.filter(order => order.status === 'completed') :
-    [];
-
   return (
     <div className="dashboard-container">
-      {/* Add Customer Notification Component */}
       <CustomerNotification orders={orders} />
       
-      {/* Header */}
       <header className="dashboard-header">
-        <div className="header-title">Amanzi Ordering System</div>
+        <div className="header-title">
+          <img src="/images/Amanzi Logo.png" alt="Amanzi Logo" className="dashboard-logo" />
+          <span>Amanzi Ordering System</span>
+        </div>
         <div className="user-info">
           <span>Welcome, {user?.name || 'Student'}</span>
           <button onClick={handleLogout} className="logout-btn">Logout</button>
@@ -150,30 +178,6 @@ const CustomerDashboard = () => {
                   onClick={() => setActiveTab('orders')}
                 >
                   My Orders
-                </button>
-              </li>
-              <li className="sidebar-menu-item">
-                <button 
-                  className={`sidebar-menu-button ${activeTab === 'pending' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('pending')}
-                >
-                  Pending
-                </button>
-              </li>
-              <li className="sidebar-menu-item">
-                <button 
-                  className={`sidebar-menu-button ${activeTab === 'accepted' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('accepted')}
-                >
-                  Accepted
-                </button>
-              </li>
-              <li className="sidebar-menu-item">
-                <button 
-                  className={`sidebar-menu-button ${activeTab === 'completed' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('completed')}
-                >
-                  Completed
                 </button>
               </li>
               <li className="sidebar-menu-item">
@@ -213,19 +217,24 @@ const CustomerDashboard = () => {
 
         {/* Main Content */}
         <div className="main-content">
+          {/* Global success/error messages */}
+          {success && (
+            <div className="alert-success" style={{ marginBottom: '1rem' }}>
+              {success}
+            </div>
+          )}
+          
+          {error && activeTab !== 'newOrder' && (
+            <div className="alert-error" style={{ marginBottom: '1rem' }}>
+              {error}
+            </div>
+          )}
+
           {activeTab === 'newOrder' && (
             <div className="content-card">
               <div className="card-header">
                 <h2 className="card-title">Order Water</h2>
               </div>
-
-              {success && (
-                <div className="alert-success">{success}</div>
-              )}
-              
-              {error && (
-                <div className="alert-error">{error}</div>
-              )}
 
               <OrderForm 
                 onOrderSubmit={handleOrderSubmit}
@@ -235,15 +244,10 @@ const CustomerDashboard = () => {
             </div>
           )}
 
-          {(activeTab === 'orders' || activeTab === 'pending' || activeTab === 'accepted' || activeTab === 'completed') && (
+          {activeTab === 'orders' && (
             <div className="content-card">
               <div className="card-header">
-                <h2 className="card-title">
-                  {activeTab === 'orders' ? 'Order History' : 
-                   activeTab === 'pending' ? 'Pending Orders' : 
-                   activeTab === 'accepted' ? 'Accepted Orders' : 
-                   'Completed Orders'}
-                </h2>
+                <h2 className="card-title">Order History</h2>
                 <button className="refresh-btn" onClick={fetchOrders}>
                   Refresh
                 </button>
@@ -255,7 +259,7 @@ const CustomerDashboard = () => {
                 <div className="error-state">{error}</div>
               ) : (
                 <OrderHistory 
-                  orders={filteredOrders} 
+                  orders={orders} 
                   onViewInvoice={handleViewInvoice}
                 />
               )}
