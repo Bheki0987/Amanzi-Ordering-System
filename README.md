@@ -465,7 +465,10 @@ For questions, issues, or suggestions:
 
 - Open an issue in the repository
 - Contact the development team
-- Email: bhekimogola123@gmail.com
+- Email: 
+  - Bheki: bhekimogola123@gmail.com
+  - Karabo: makaukarabo538@gmail.com
+  - Potego: 
 
 ## 🔗 Related Resources
 
