@@ -386,14 +386,17 @@ This project was developed by a dedicated team of NWU Mahikeng Campus students:
 
 ### Development Team
 
-**Bheki Mogola** - *Backend Developer*
+**Bheki Mogola** - *Backend Developer* 
+[LinkedIn](https://www.linkedin.com/in/bheki-mogola-8481122b7/) 
 - Backend architecture and API development
 - Database design and MongoDB integration
 - Authentication and authorization implementation
 - Payment processing integration
 - Email service configuration
 
-**Karabo Makau** - *Frontend Developer*
+**Karabo Makau** - *Frontend Developer* 
+[LinkedIn](https://www.linkedin.com/in/karabo-makau-399398221/) 
+[GitHub](https://github.com/Karabo28Git) 
 - React component development
 - User interface design and implementation
 - State management and routing
