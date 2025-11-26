@@ -404,6 +404,7 @@ This project was developed by a dedicated team of NWU Mahikeng Campus students:
 - Responsive design and styling
 
 **Potego Sethwape** - *Documentation Specialist*
+[LinkedIn](https://www.linkedin.com/in/potegosethwape/) 
 - Project documentation
 - User guides and manuals
 - API documentation
@@ -468,7 +469,7 @@ For questions, issues, or suggestions:
 - Email: 
   - Bheki: bhekimogola123@gmail.com
   - Karabo: makaukarabo538@gmail.com
-  - Potego: 
+  - Potego: potegotseke02@gmail.com
 
 ## 🔗 Related Resources
 
